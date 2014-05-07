@@ -1,1 +1,1 @@
-include ':WeatherApp', ':External:ActiveAndroid'
+include ':WeatherApp', ':External:ActiveAndroid', ':External:Bolts-Android:Bolts'

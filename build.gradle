@@ -9,6 +9,14 @@ buildscript {
     }
 }
 
+ext {
+    compileSdkVersion = 19
+    buildToolsVersion = "19.0.3"
+
+    minSdkVersion = 14
+    targetSdkVersion = 19
+}
+
 allprojects {
     repositories {
         mavenCentral()

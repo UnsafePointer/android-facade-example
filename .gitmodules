@@ -1,3 +1,6 @@
 [submodule "External/ActiveAndroid"]
 	path = External/ActiveAndroid
 	url = git@github.com:Ruenzuo/ActiveAndroid.git
+[submodule "External/Bolts-Android"]
+	path = External/Bolts-Android
+	url = git@github.com:Ruenzuo/Bolts-Android.git
