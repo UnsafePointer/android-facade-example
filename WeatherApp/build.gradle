@@ -20,9 +20,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:19.1.0'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.guava:guava:17.0'
-    compile 'com.loopj.android:android-async-http:1.4.4'
+    compile 'com.squareup.okhttp:okhttp:1.5.4'
     compile project(':External:ActiveAndroid')
     compile project(':External:Bolts-Android:Bolts')
 }
