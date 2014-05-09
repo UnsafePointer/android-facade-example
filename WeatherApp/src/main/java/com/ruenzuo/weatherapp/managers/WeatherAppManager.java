@@ -4,11 +4,13 @@ import android.content.Context;
 
 import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
+import com.ruenzuo.weatherapp.definitions.StationsFetcher;
 import com.ruenzuo.weatherapp.helpers.MemoryCacheHelper;
 import com.ruenzuo.weatherapp.helpers.DatabaseHelper;
 import com.ruenzuo.weatherapp.helpers.NetworkingHelper;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
+import com.ruenzuo.weatherapp.models.Station;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,7 @@ import bolts.Task;
 /**
  * Created by ruenzuo on 07/05/14.
  */
-public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher {
+public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, StationsFetcher {
 
     INSTANCE;
 
@@ -84,14 +86,14 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher {
         });
     }
 
-    public Task<City[]> getCities(final String countryCode) {
-        return memoryCacheHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+    public Task<City[]> getCities(final Country country) {
+        return memoryCacheHelper.getCities(country).continueWithTask(new Continuation<City[], Task<City[]>>() {
             @Override
             public Task<City[]> then(Task<City[]> task) throws Exception {
                 if (!task.isFaulted()) {
                     return task;
                 }
-                return databaseHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+                return databaseHelper.getCities(country).continueWithTask(new Continuation<City[], Task<City[]>>() {
                     @Override
                     public Task<City[]> then(Task<City[]> task) throws Exception {
                         if (!task.isFaulted()) {
@@ -106,7 +108,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher {
                                 }
                             });
                         }
-                        return networkingHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+                        return networkingHelper.getCities(country).continueWithTask(new Continuation<City[], Task<City[]>>() {
                             @Override
                             public Task<City[]> then(Task<City[]> task) throws Exception {
                                 if (task.isFaulted()) {
@@ -126,6 +128,58 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher {
                                             throw storeCountriesInDatabase.getError();
                                         }
                                         return cities;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    public Task<Station[]> getStations(final City city) {
+        return memoryCacheHelper.getStations(city).continueWithTask(new Continuation<Station[], Task<Station[]>>() {
+            @Override
+            public Task<Station[]> then(Task<Station[]> task) throws Exception {
+                if (!task.isFaulted()) {
+                    return task;
+                }
+                return databaseHelper.getStations(city).continueWithTask(new Continuation<Station[], Task<Station[]>>() {
+                    @Override
+                    public Task<Station[]> then(Task<Station[]> task) throws Exception {
+                        if (!task.isFaulted()) {
+                            final Station[] stations = task.getResult();
+                            return memoryCacheHelper.storeStations(stations, city).continueWith(new Continuation<Boolean, Station[]>() {
+                                @Override
+                                public Station[] then(Task<Boolean> task) throws Exception {
+                                    if (task.isFaulted()) {
+                                        throw task.getError();
+                                    }
+                                    return stations;
+                                }
+                            });
+                        }
+                        return networkingHelper.getStations(city).continueWithTask(new Continuation<Station[], Task<Station[]>>() {
+                            @Override
+                            public Task<Station[]> then(Task<Station[]> task) throws Exception {
+                                if (task.isFaulted()) {
+                                    throw task.getError();
+                                }
+                                final Station[] stations = task.getResult();
+                                final Task<Boolean> storeCountriesInMemory = memoryCacheHelper.storeStations(stations, city);
+                                final Task<Boolean> storeCountriesInDatabase = databaseHelper.storeStations(stations, city);
+                                List<Task<Boolean>> tasks = Arrays.asList(storeCountriesInMemory, storeCountriesInDatabase);
+                                return Task.whenAll(tasks).continueWith(new Continuation<Void, Station[]>() {
+                                    @Override
+                                    public Station[] then(Task<Void> task) throws Exception {
+                                        if (storeCountriesInMemory.isFaulted()) {
+                                            throw storeCountriesInMemory.getError();
+                                        }
+                                        if (storeCountriesInDatabase.isFaulted()) {
+                                            throw storeCountriesInDatabase.getError();
+                                        }
+                                        return stations;
                                     }
                                 });
                             }

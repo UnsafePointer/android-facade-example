@@ -30,8 +30,8 @@ public class CitiesAdapter extends ArrayAdapter<City> {
             convertView = inflater.inflate(resourceId, null);
         }
         City country = getItem(position);
-        TextView textCityName = (TextView) convertView.findViewById(R.id.txtViewCityName);
-        textCityName.setText(country.getName());
+        TextView txtViewCityName = (TextView) convertView.findViewById(R.id.txtViewCityName);
+        txtViewCityName.setText(country.getName());
         return convertView;
     }
 

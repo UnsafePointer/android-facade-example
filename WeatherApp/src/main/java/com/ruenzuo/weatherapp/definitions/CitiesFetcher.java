@@ -1,6 +1,7 @@
 package com.ruenzuo.weatherapp.definitions;
 
 import com.ruenzuo.weatherapp.models.City;
+import com.ruenzuo.weatherapp.models.Country;
 
 import bolts.Task;
 
@@ -9,6 +10,6 @@ import bolts.Task;
  */
 public interface CitiesFetcher {
 
-    public Task<City[]> getCities(String countryCode);
+    public Task<City[]> getCities(Country country);
 
 }

@@ -1,6 +1,7 @@
 package com.ruenzuo.weatherapp.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.ruenzuo.weatherapp.R;
@@ -25,7 +26,9 @@ public class CitiesActivity extends Activity implements CitiesListFragment.Citie
 
     @Override
     public void onCitySeleted(City city) {
-
+        Intent intent = new Intent(this, StationsActivity.class);
+        intent.putExtra("City", city);
+        startActivity(intent);
     }
 
 }

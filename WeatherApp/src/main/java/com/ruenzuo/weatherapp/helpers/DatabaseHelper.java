@@ -6,9 +6,12 @@ import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CitiesStorer;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesStorer;
+import com.ruenzuo.weatherapp.definitions.StationsFetcher;
+import com.ruenzuo.weatherapp.definitions.StationsStorer;
 import com.ruenzuo.weatherapp.extensions.NotFoundInDatabaseException;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
+import com.ruenzuo.weatherapp.models.Station;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -18,7 +21,7 @@ import bolts.Task;
 /**
  * Created by ruenzuo on 07/05/14.
  */
-public class DatabaseHelper implements CountriesFetcher, CountriesStorer, CitiesFetcher, CitiesStorer {
+public class DatabaseHelper implements CountriesFetcher, CountriesStorer, CitiesFetcher, CitiesStorer, StationsFetcher, StationsStorer {
 
     @Override
     public Task<Country[]> getCountries() {
@@ -55,11 +58,11 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
     }
 
     @Override
-    public Task<City[]> getCities(final String countryCode) {
+    public Task<City[]> getCities(final Country country) {
         return Task.callInBackground(new Callable<City[]>() {
             @Override
             public City[] call() throws Exception {
-                List<City> cities = new Select().from(City.class).where("countryCode = ?", countryCode).execute();
+                List<City> cities = new Select().from(City.class).where("countryCode = ?", country.getCode()).execute();
                 if (cities.size() == 0) {
                     throw new NotFoundInDatabaseException("Cities not found on database");
                 }
@@ -78,6 +81,41 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
                     for (int i = 0; i < cities.length; i++) {
                         City city = cities[i];
                         city.save();
+                    }
+                    ActiveAndroid.setTransactionSuccessful();
+                } finally {
+                    ActiveAndroid.endTransaction();
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public Task<Station[]> getStations(final City city) {
+        return Task.callInBackground(new Callable<Station[]>() {
+            @Override
+            public Station[] call() throws Exception {
+                List<Station> stations = new Select().from(Station.class).where("cityName = ?", city.getName()).execute();
+                if (stations.size() == 0) {
+                    throw new NotFoundInDatabaseException("Cities not found on database");
+                }
+                return stations.toArray(new Station[stations.size()]);
+            }
+        });
+    }
+
+    @Override
+    public Task<Boolean> storeStations(final Station[] stations, final City city) {
+        return Task.callInBackground(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                ActiveAndroid.beginTransaction();
+                try {
+                    for (int i = 0; i < stations.length; i++) {
+                        Station station = stations[i];
+                        station.setCityName(city.getName());
+                        station.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
                 } finally {

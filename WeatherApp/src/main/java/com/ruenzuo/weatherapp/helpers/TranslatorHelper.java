@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
+import com.ruenzuo.weatherapp.models.Station;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +31,12 @@ public class TranslatorHelper {
         JsonObject response = (JsonObject) jsonParser.parse(payload);
         JsonArray geonames = (JsonArray) response.get("geonames");
         return gson.fromJson(geonames, City[].class);
+    }
+
+    public Station[] translateStations(String payload) throws Exception {
+        JsonObject response = (JsonObject) jsonParser.parse(payload);
+        JsonArray list = (JsonArray) response.get("list");
+        return gson.fromJson(list, Station[].class);
     }
 
 }

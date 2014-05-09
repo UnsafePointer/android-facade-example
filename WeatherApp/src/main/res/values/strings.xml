@@ -3,5 +3,6 @@
 
     <string name="app_name">WeatherApp</string>
     <string name="cities_title">Cities</string>
+    <string name="stations_title">Stations</string>
 
 </resources>

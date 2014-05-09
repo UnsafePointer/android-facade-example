@@ -2,8 +2,10 @@ package com.ruenzuo.weatherapp.helpers;
 
 import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
+import com.ruenzuo.weatherapp.definitions.StationsFetcher;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
+import com.ruenzuo.weatherapp.models.Station;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.BufferedReader;
@@ -20,7 +22,7 @@ import bolts.Task;
 /**
  * Created by ruenzuo on 07/05/14.
  */
-public class NetworkingHelper implements CountriesFetcher, CitiesFetcher {
+public class NetworkingHelper implements CountriesFetcher, CitiesFetcher, StationsFetcher {
 
     private OkHttpClient client = new OkHttpClient();
     private TranslatorHelper translatorHelper = new TranslatorHelper();
@@ -52,11 +54,21 @@ public class NetworkingHelper implements CountriesFetcher, CitiesFetcher {
     }
 
     @Override
-    public Task<City[]> getCities(final String countryCode) {
+    public Task<City[]> getCities(final Country country) {
         return Task.callInBackground(new Callable<City[]>() {
             @Override
             public City[] call() throws Exception {
-                return translatorHelper.translateCities(get("http://api.geonames.org/searchJSON?country=" + countryCode + "&username=WeatherApp"));
+                return translatorHelper.translateCities(get("http://api.geonames.org/searchJSON?country=" + country.getCode() + "&username=WeatherApp"));
+            }
+        });
+    }
+
+    @Override
+    public Task<Station[]> getStations(final City city) {
+        return Task.callInBackground(new Callable<Station[]>() {
+            @Override
+            public Station[] call() throws Exception {
+                return translatorHelper.translateStations(get("http://api.openweathermap.org/data/2.5/find?lat=" + city.getLatitude() + "&lon=" + city.getLongitude()));
             }
         });
     }

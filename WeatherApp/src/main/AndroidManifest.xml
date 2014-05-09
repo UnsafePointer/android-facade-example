@@ -21,5 +21,8 @@
         <activity
             android:name=".activities.CitiesActivity"
             android:label="@string/cities_title" />
+        <activity
+            android:name=".activities.StationsActivity"
+            android:label="@string/stations_title" />
     </application>
 </manifest>
