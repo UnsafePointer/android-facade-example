@@ -15,7 +15,6 @@ public class CountriesActivity extends Activity implements CountriesListFragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_countries);
-        WeatherAppManager.INSTANCE.setContext(getApplicationContext());
     }
 
     @Override

@@ -52,12 +52,21 @@ public class CountriesListFragment extends ListFragment implements SwipeRefreshL
         View view = inflater.inflate(R.layout.fragment_countries, container, false);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeContainer.setOnRefreshListener(this);
-        swipeContainer.setColorScheme(android.R.color.holo_blue_bright, android.R.color.holo_blue_dark, android.R.color.holo_blue_bright, android.R.color.holo_blue_dark);
+        swipeContainer.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_blue_dark);
+        swipeContainer.setRefreshing(true);
+        refresh();
         return view;
     }
 
     @Override
     public void onRefresh() {
+        refresh();
+    }
+
+    private void refresh() {
         final long startTime = System.currentTimeMillis();
         WeatherAppManager.INSTANCE.getCountries().continueWith(new Continuation<Country[], Void>() {
 
@@ -69,6 +78,7 @@ public class CountriesListFragment extends ListFragment implements SwipeRefreshL
                 if (!task.isFaulted()) {
                     swipeContainer.setRefreshing(false);
                     CountriesAdapter countriesAdapter = (CountriesAdapter) getListAdapter();
+                    countriesAdapter.clear();
                     countriesAdapter.addAll(task.getResult());
                     countriesAdapter.notifyDataSetChanged();
                 }

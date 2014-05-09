@@ -21,16 +21,6 @@ public enum WeatherAppManager implements CountriesFetcher {
 
     INSTANCE;
 
-    private Context context;
-
-    public Context getContext() {
-        return context;
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
     private MemoryCacheHelper memoryCacheHelper = new MemoryCacheHelper();
     private DatabaseHelper databaseHelper = new DatabaseHelper();
     private NetworkingHelper networkingHelper = new NetworkingHelper();
