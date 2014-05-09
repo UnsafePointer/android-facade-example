@@ -3,6 +3,7 @@ package com.ruenzuo.weatherapp.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.ruenzuo.weatherapp.R;
 import com.ruenzuo.weatherapp.fragments.CitiesListFragment;
@@ -18,6 +19,7 @@ public class CitiesActivity extends Activity implements CitiesListFragment.Citie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cities);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
         Country country = (Country) getIntent().getExtras().getSerializable("Country");
         CitiesListFragment fragment = new CitiesListFragment();
         fragment.setCountry(country);
@@ -29,6 +31,16 @@ public class CitiesActivity extends Activity implements CitiesListFragment.Citie
         Intent intent = new Intent(this, StationsActivity.class);
         intent.putExtra("City", city);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
