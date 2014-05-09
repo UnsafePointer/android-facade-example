@@ -2,10 +2,12 @@ package com.ruenzuo.weatherapp.managers;
 
 import android.content.Context;
 
+import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
 import com.ruenzuo.weatherapp.helpers.MemoryCacheHelper;
 import com.ruenzuo.weatherapp.helpers.DatabaseHelper;
 import com.ruenzuo.weatherapp.helpers.NetworkingHelper;
+import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
 
 import java.util.Arrays;
@@ -17,7 +19,7 @@ import bolts.Task;
 /**
  * Created by ruenzuo on 07/05/14.
  */
-public enum WeatherAppManager implements CountriesFetcher {
+public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher {
 
     INSTANCE;
 
@@ -62,18 +64,68 @@ public enum WeatherAppManager implements CountriesFetcher {
                                 final Task<Boolean> storeCountriesInMemory = memoryCacheHelper.storeCountries(countries);
                                 final Task<Boolean> storeCountriesInDatabase = databaseHelper.storeCountries(countries);
                                 List<Task<Boolean>> tasks = Arrays.asList(storeCountriesInMemory, storeCountriesInDatabase);
-                                return Task.whenAll(tasks).continueWithTask(new Continuation<Void, Task<Country[]>>() {
+                                return Task.whenAll(tasks).continueWith(new Continuation<Void, Country[]>() {
                                     @Override
-                                    public Task<Country[]> then(Task<Void> task) throws Exception {
+                                    public Country[] then(Task<Void> task) throws Exception {
                                         if (storeCountriesInMemory.isFaulted()) {
                                             throw storeCountriesInMemory.getError();
                                         }
                                         if (storeCountriesInDatabase.isFaulted()) {
                                             throw storeCountriesInDatabase.getError();
                                         }
-                                        Task<Country[]>.TaskCompletionSource completionSource = Task.create();
-                                        completionSource.setResult(countries);
-                                        return completionSource.getTask();
+                                        return countries;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    public Task<City[]> getCities(final String countryCode) {
+        return memoryCacheHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+            @Override
+            public Task<City[]> then(Task<City[]> task) throws Exception {
+                if (!task.isFaulted()) {
+                    return task;
+                }
+                return databaseHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+                    @Override
+                    public Task<City[]> then(Task<City[]> task) throws Exception {
+                        if (!task.isFaulted()) {
+                            final City[] cities = task.getResult();
+                            return memoryCacheHelper.storeCities(cities).continueWith(new Continuation<Boolean, City[]>() {
+                                @Override
+                                public City[] then(Task<Boolean> task) throws Exception {
+                                    if (task.isFaulted()) {
+                                        throw task.getError();
+                                    }
+                                    return cities;
+                                }
+                            });
+                        }
+                        return networkingHelper.getCities(countryCode).continueWithTask(new Continuation<City[], Task<City[]>>() {
+                            @Override
+                            public Task<City[]> then(Task<City[]> task) throws Exception {
+                                if (task.isFaulted()) {
+                                    throw task.getError();
+                                }
+                                final City[] cities = task.getResult();
+                                final Task<Boolean> storeCountriesInMemory = memoryCacheHelper.storeCities(cities);
+                                final Task<Boolean> storeCountriesInDatabase = databaseHelper.storeCities(cities);
+                                List<Task<Boolean>> tasks = Arrays.asList(storeCountriesInMemory, storeCountriesInDatabase);
+                                return Task.whenAll(tasks).continueWith(new Continuation<Void, City[]>() {
+                                    @Override
+                                    public City[] then(Task<Void> task) throws Exception {
+                                        if (storeCountriesInMemory.isFaulted()) {
+                                            throw storeCountriesInMemory.getError();
+                                        }
+                                        if (storeCountriesInDatabase.isFaulted()) {
+                                            throw storeCountriesInDatabase.getError();
+                                        }
+                                        return cities;
                                     }
                                 });
                             }

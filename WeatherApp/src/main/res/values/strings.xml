@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">WeatherApp</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="cities_title">Cities</string>
 
 </resources>

@@ -9,16 +9,16 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ruenzuo.weatherapp.R;
-import com.ruenzuo.weatherapp.models.Country;
+import com.ruenzuo.weatherapp.models.City;
 
 /**
  * Created by ruenzuo on 08/05/14.
  */
-public class CountriesAdapter extends ArrayAdapter<Country> {
+public class CitiesAdapter extends ArrayAdapter<City> {
 
     private int resourceId;
 
-    public CountriesAdapter(Context context, int resource) {
+    public CitiesAdapter(Context context, int resource) {
         super(context, resource);
         resourceId = resource;
     }
@@ -29,8 +29,8 @@ public class CountriesAdapter extends ArrayAdapter<Country> {
             LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
             convertView = inflater.inflate(resourceId, null);
         }
-        Country country = getItem(position);
-        TextView textCityName = (TextView) convertView.findViewById(R.id.txtViewCountryName);
+        City country = getItem(position);
+        TextView textCityName = (TextView) convertView.findViewById(R.id.txtViewCityName);
         textCityName.setText(country.getName());
         return convertView;
     }

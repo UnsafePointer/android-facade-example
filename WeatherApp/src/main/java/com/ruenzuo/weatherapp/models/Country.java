@@ -5,11 +5,13 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by ruenzuo on 07/05/14.
  */
 @Table(name = "Country")
-public class Country extends Model {
+public class Country extends Model implements Serializable {
 
     @Column(name = "name")
     @SerializedName("countryName")
