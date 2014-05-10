@@ -1,14 +1,17 @@
 package com.ruenzuo.weatherapp.models;
 
+import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 
 /**
  * Created by ruenzuo on 09/05/14.
  */
 @Table(name = "StationData")
-public class StationData {
+public class StationData extends Model implements Serializable {
 
     @Column(name = "temperature")
     @SerializedName("temp")

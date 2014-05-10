@@ -1,6 +1,7 @@
 package com.ruenzuo.weatherapp.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -27,7 +28,9 @@ public class StationsActivity extends Activity implements StationsListFragment.S
 
     @Override
     public void onStationSeleted(Station station) {
-
+        Intent intent = new Intent(this, StationDataActivity.class);
+        intent.putExtra("StationData", station.getData());
+        startActivity(intent);
     }
 
     @Override

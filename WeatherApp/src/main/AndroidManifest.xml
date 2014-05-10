@@ -24,5 +24,8 @@
         <activity
             android:name=".activities.StationsActivity"
             android:label="@string/stations_title" />
+        <activity
+            android:name=".activities.StationDataActivity"
+            android:label="@string/station_data_title" />
     </application>
 </manifest>

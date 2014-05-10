@@ -4,5 +4,11 @@
     <string name="app_name">WeatherApp</string>
     <string name="cities_title">Cities</string>
     <string name="stations_title">Stations</string>
+    <string name="station_data_title">Station Data</string>
+    <string-array name="titles">
+        <item>Temperature</item>
+        <item>Pressure</item>
+        <item>Humidity</item>
+    </string-array>
 
 </resources>

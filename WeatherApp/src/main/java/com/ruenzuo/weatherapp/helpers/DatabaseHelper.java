@@ -115,6 +115,7 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
                     for (int i = 0; i < stations.length; i++) {
                         Station station = stations[i];
                         station.setCityName(city.getName());
+                        station.getData().save();
                         station.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
