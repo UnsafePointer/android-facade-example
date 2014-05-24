@@ -26,6 +26,10 @@ $ cd android-facade-example && gradle clean build
 
 __Design notes:__
 
+* Here's an UML diagram describing the pattern:
+
+![android-facade-screenshot-4.png](https://dl.dropboxusercontent.com/u/12352209/GitHub/android-facade-screenshot-5.png)
+
 * The SyncService is not part of the façade. Therefore the code there it's a little messy.
 * There are a lot of performance and test hooks and methods that you don't need to have on production.
 * This has been tested on very large data sources it has 250 countries, 100 cities for each country and 10 stations for each city.
