@@ -28,7 +28,7 @@ __Design notes:__
 
 * The SyncService is not part of the façade. Therefore the code there it's a little messy.
 * There are a lot of performance and test hooks and methods that you don't need to have on production.
-* This has been tested on very large data sources it has 250 countries, 100 cities for each country and 10 stations for each city).
+* This has been tested on very large data sources it has 250 countries, 100 cities for each country and 10 stations for each city.
 * Currently I'm not using any synchronization pattern, just checking if the data exists on database to make new requests.
 
 __To-Do:__
