@@ -10,13 +10,13 @@ __Building:__
 In order to build the application, clone this repo recursively:
 
 ```sh
-$ git clone git@github.com:Ruenzuo/ios-facade-example.git --recursive
+$ git clone git@github.com:Ruenzuo/android-facade-example.git --recursive
 ```
 
 Then set up the dependencies and you're ready to go:
 
 ```sh
-$ cd ios-facade-example && gradle clean build
+$ cd android-facade-example && gradle clean build
 ```  
 
 ![android-facade-screenshot-1.png](https://dl.dropboxusercontent.com/u/12352209/GitHub/android-facade-screenshot-1.png)&nbsp;
