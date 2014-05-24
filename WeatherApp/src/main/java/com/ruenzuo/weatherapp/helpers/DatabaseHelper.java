@@ -44,11 +44,12 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
             public Boolean call() throws Exception {
                 ActiveAndroid.beginTransaction();
                 try {
-                    for (int i = 0; i < countries.length; i++) {
-                        Country country = countries[i];
+                    for (Country country : countries) {
                         country.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
+                } catch (Exception e) {
+                    throw e;
                 } finally {
                     ActiveAndroid.endTransaction();
                 }
@@ -78,11 +79,12 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
             public Boolean call() throws Exception {
                 ActiveAndroid.beginTransaction();
                 try {
-                    for (int i = 0; i < cities.length; i++) {
-                        City city = cities[i];
+                    for (City city : cities) {
                         city.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
+                } catch (Exception e) {
+                  throw e;
                 } finally {
                     ActiveAndroid.endTransaction();
                 }
@@ -112,13 +114,14 @@ public class DatabaseHelper implements CountriesFetcher, CountriesStorer, Cities
             public Boolean call() throws Exception {
                 ActiveAndroid.beginTransaction();
                 try {
-                    for (int i = 0; i < stations.length; i++) {
-                        Station station = stations[i];
+                    for (Station station : stations) {
                         station.setCityName(city.getName());
                         station.getData().save();
                         station.save();
                     }
                     ActiveAndroid.setTransactionSuccessful();
+                } catch (Exception e) {
+                    throw e;
                 } finally {
                     ActiveAndroid.endTransaction();
                 }

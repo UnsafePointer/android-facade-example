@@ -1,6 +1,10 @@
 package com.ruenzuo.weatherapp.managers;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.Log;
 
 import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
@@ -11,6 +15,8 @@ import com.ruenzuo.weatherapp.helpers.NetworkingHelper;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
 import com.ruenzuo.weatherapp.models.Station;
+import com.ruenzuo.weatherapp.services.SyncService;
+import com.ruenzuo.weatherapp.utils.WeatherAppUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +34,22 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
     private MemoryCacheHelper memoryCacheHelper = new MemoryCacheHelper();
     private DatabaseHelper databaseHelper = new DatabaseHelper();
     private NetworkingHelper networkingHelper = new NetworkingHelper();
+    private boolean isSyncing = false;
+    private Context context;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isSyncing = false;
+            context.unregisterReceiver(receiver);
+        }
+
+    };
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
     public Task<Country[]> getCountries() {
         return memoryCacheHelper.getCountries().continueWithTask(new Continuation<Country[], Task<Country[]>>() {
@@ -91,6 +113,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
             @Override
             public Task<City[]> then(Task<City[]> task) throws Exception {
                 if (!task.isFaulted()) {
+                    Log.i("WeatherAppManager", "Cities retrieved from memory");
                     return task;
                 }
                 return databaseHelper.getCities(country).continueWithTask(new Continuation<City[], Task<City[]>>() {
@@ -104,6 +127,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
                                     if (task.isFaulted()) {
                                         throw task.getError();
                                     }
+                                    Log.i("WeatherAppManager", "Cities retrieved from database");
                                     return cities;
                                 }
                             });
@@ -127,6 +151,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
                                         if (storeCountriesInDatabase.isFaulted()) {
                                             throw storeCountriesInDatabase.getError();
                                         }
+                                        Log.i("WeatherAppManager", "Cities retrieved from network");
                                         return cities;
                                     }
                                 });
@@ -143,6 +168,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
             @Override
             public Task<Station[]> then(Task<Station[]> task) throws Exception {
                 if (!task.isFaulted()) {
+                    Log.i("WeatherAppManager", "Stations retrieved from memory");
                     return task;
                 }
                 return databaseHelper.getStations(city).continueWithTask(new Continuation<Station[], Task<Station[]>>() {
@@ -156,6 +182,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
                                     if (task.isFaulted()) {
                                         throw task.getError();
                                     }
+                                    Log.i("WeatherAppManager", "Stations retrieved from database");
                                     return stations;
                                 }
                             });
@@ -179,6 +206,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
                                         if (storeCountriesInDatabase.isFaulted()) {
                                             throw storeCountriesInDatabase.getError();
                                         }
+                                        Log.i("WeatherAppManager", "Stations retrieved from network");
                                         return stations;
                                     }
                                 });
@@ -188,6 +216,17 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
                 });
             }
         });
+    }
+
+    public void startSyncService(Country[] countries) {
+        if (isSyncing) {
+            return;
+        }
+        context.registerReceiver(receiver, new IntentFilter(SyncService.SYNC_DONE));
+        isSyncing = true;
+        Intent intent = new Intent(context, SyncService.class);
+        intent.putExtra("CountriesIdentifiers", WeatherAppUtils.getIdentifiers(countries));
+        context.startService(intent);
     }
 
 }

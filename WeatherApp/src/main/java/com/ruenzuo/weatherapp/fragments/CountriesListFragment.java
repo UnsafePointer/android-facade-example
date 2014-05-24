@@ -79,10 +79,12 @@ public class CountriesListFragment extends ListFragment implements SwipeRefreshL
                 long elapsedTime = stopTime - startTime;
                 Log.i("WeatherApp", String.valueOf(elapsedTime));
                 if (!task.isFaulted()) {
+                    Country[] countries = task.getResult();
+                    WeatherAppManager.INSTANCE.startSyncService(countries);
                     swipeContainer.setRefreshing(false);
                     CountriesAdapter countriesAdapter = (CountriesAdapter) getListAdapter();
                     countriesAdapter.clear();
-                    countriesAdapter.addAll(task.getResult());
+                    countriesAdapter.addAll(countries);
                     countriesAdapter.notifyDataSetChanged();
                 }
                 return null;
