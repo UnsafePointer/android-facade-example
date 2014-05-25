@@ -1,19 +1,22 @@
 package com.ruenzuo.weatherapp.helpers;
 
+import android.content.Context;
+
 import com.ruenzuo.weatherapp.definitions.CitiesFetcher;
 import com.ruenzuo.weatherapp.definitions.CountriesFetcher;
 import com.ruenzuo.weatherapp.definitions.StationsFetcher;
 import com.ruenzuo.weatherapp.models.City;
 import com.ruenzuo.weatherapp.models.Country;
 import com.ruenzuo.weatherapp.models.Station;
+import com.squareup.okhttp.HttpResponseCache;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
@@ -26,6 +29,16 @@ public class NetworkingHelper implements CountriesFetcher, CitiesFetcher, Statio
 
     private OkHttpClient client = new OkHttpClient();
     private TranslatorHelper translatorHelper = new TranslatorHelper();
+
+    public void setupCache(Context context) {
+        try {
+            File httpCacheDirectory = new File(context.getCacheDir().getAbsolutePath(), "HttpCache");
+            HttpResponseCache cache = new HttpResponseCache(httpCacheDirectory, 20 * 1024);
+            client.setResponseCache(cache);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private String get(String URLString) throws Exception {
         HttpURLConnection connection = client.open(new URL(URLString));

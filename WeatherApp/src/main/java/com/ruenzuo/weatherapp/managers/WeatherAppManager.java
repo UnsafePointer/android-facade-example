@@ -49,6 +49,7 @@ public enum WeatherAppManager implements CountriesFetcher, CitiesFetcher, Statio
 
     public void setContext(Context context) {
         this.context = context;
+        networkingHelper.setupCache(context);
     }
 
     public Task<Country[]> getCountries() {
